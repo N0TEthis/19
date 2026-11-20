@@ -1,58 +1,58 @@
 #include <iostream>
 using namespace std;
 
-class Traveler {
+//участок пути скорость и время 
+class Leg {
 private:
-    double v1, v2, v3;// скорости
-    double t1, t2, t3;// время на участках
+    double v, t;
 
 public:
-    Traveler(double v1, double t1, double v2, double t2, double v3, double t3)
-        : v1(v1), t1(t1), v2(v2), t2(t2), v3(v3), t3(t3) {}
+    Leg(double v, double t) : v(v), t(t) {}
+    double Speed() const { return v; }
+    double Time() const { return t; }
+    double Distance() const { return v * t; }//длина участка
+};
+// путник состоит из трёх участков
+class Traveler {
+private:
+    Leg a, b, c;
+public:
+    Traveler(Leg a, Leg b, Leg c) : a(a), b(b), c(c) {}
 
-    // весь путь
     double TotalDistance() const {
-        return v1 * t1 + v2 * t2 + v3 * t3;
-    }
+        return a.Distance() + b.Distance() + c.Distance();}
 
-    // время, за которое пройдена половина пути
     double TimeToHalf() const {
-        double s1 = v1 * t1;
-        double s2 = v2 * t2;
         double half = TotalDistance() / 2;
 
-        if (half == 0) return 0;// путь нулевой
+        if (half == 0) return 0;
 
-        if (half <= s1)// половина1
-            return half / v1;
-        else if (half <= s1 + s2)// половина2
-            return t1 + (half - s1) / v2;
-        else// половина3
-            return t1 + t2 + (half - s1 - s2) / v3;
-    }
+        if (half <= a.Distance())//половина1
+            return half / a.Speed();
+        else if (half <= a.Distance() + b.Distance())//половина2
+            return a.Time() + (half - a.Distance()) / b.Speed();
+        else//половина3
+            return a.Time() + b.Time()
+                 + (half - a.Distance() - b.Distance()) / c.Speed();}
 };
-
 int main() {
     setlocale(LC_ALL, "RU");
-cout << "привет!" << endl;
-    char again;// продолжать или нет
-
+    cout << "привет!" << endl;
+    char again;
     do {
         double v1, t1, v2, t2, v3, t3;
-        
-        cout << "введите v1 t1: "; cin >> v1 >> t1;// например 4 2
+
+        cout << "введите v1 t1: "; cin >> v1 >> t1;//например 4 2
         cout << "введите v2 t2: "; cin >> v2 >> t2;
         cout << "введите v3 t3: "; cin >> v3 >> t3;
 
-        Traveler man(v1, t1, v2, t2, v3, t3);
+        Traveler man(Leg(v1, t1), Leg(v2, t2), Leg(v3, t3));
         cout << "половину пути пройдено за " << man.TimeToHalf() << " ч" << endl;
 
         cout << "\nпосчитать ещё раз? (y - да, n - нет): ";
         cin >> again;
         cout << endl;
-
     } while (again == 'y' || again == 'Y');
-
     cout << "до встречи!" << endl;
     return 0;
 }
